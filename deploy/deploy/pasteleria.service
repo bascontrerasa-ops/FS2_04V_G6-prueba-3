@@ -1,0 +1,14 @@
+[Unit]
+Description=Pasteleria API
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/pasteleria/backend
+EnvironmentFile=/home/ubuntu/pasteleria/backend/pasteleria.env
+ExecStart=/usr/bin/java -Xms128m -Xmx384m -jar /home/ubuntu/pasteleria/backend/app.jar --spring.profiles.active=prod
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
