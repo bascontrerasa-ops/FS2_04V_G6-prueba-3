@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Pacifico&display=swap');
+
+body {
+    background-color: #FFF5E1;
+    color: #5D4037;
+    font-family: 'Lato', sans-serif;
+}
+
+h1, h2, h3, h4, h5, .navbar-brand, .pacifico-font {
+    font-family: 'Pacifico', cursive;
+    color: #8B4513;
+}
+
+.navbar-custom {
+    background-color: #8B4513 !important;
+}
+
+.btn-custom {
+    background-color: #FFC0CB;
+    color: #5D4037;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-custom:hover {
+    background-color: #ffb6c1;
+    color: #5D4037;
+}
+
+.text-secondary-custom {
+    color: #B0BEC5; 
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #FFC0CB;
+}
+
+footer {
+    background-color: #8B4513;
+    color: #FFF5E1;
+}
+.card-perfil {
+    background-color: #ffffff;
+    border: 1px solid #FFC0CB;
+    box-shadow: 0 4px 8px rgba(139, 69, 19, 0.1);
+}
+
+.form-control, .form-select {
+    border: 1px solid #FFC0CB;
+    color: #5D4037;
+    background-color: #FFF5E1;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #8B4513;
+    box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25);
+    background-color: #ffffff;
+}
+
+hr {
+    border-top: 1px solid #FFC0CB;
+    opacity: 0.5;
+}
+.cart-thumb {
+    width: 68px;
+    height: 58px;
+    object-fit: cover;
+}
+
+.admin-sidebar .nav-link.active {
+    background-color: #8B4513;
+    color: #fff;
+    border-radius: 0.35rem;
+}
