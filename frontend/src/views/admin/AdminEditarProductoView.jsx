@@ -1,0 +1,169 @@
+import { useEffect, useState } from 'react'
+import { Alert, Button, Form } from 'react-bootstrap'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { productService } from '../../services/productService'
+
+function AdminEditarProductoView() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const [producto, setProducto] = useState({
+    nombre: '',
+    precio: '',
+    categoria: '',
+    descripcion: '',
+    imagen: ''
+  })
+  const [errores, setErrores] = useState({})
+  const [mensaje, setMensaje] = useState('')
+  const [errorServidor, setErrorServidor] = useState('')
+
+  useEffect(() => {
+    productService.find(id)
+      .then((datos) => {
+        setProducto({
+          nombre: datos.nombre,
+          precio: datos.precio,
+          categoria: datos.categoria,
+          descripcion: datos.descripcion,
+          imagen: datos.imagen
+        })
+      })
+      .catch(() => setErrorServidor('No se pudo cargar la información del producto'))
+  }, [id])
+
+  function manejarCambio(event) {
+    const { name, value } = event.target
+    setProducto({ ...producto, [name]: value })
+  }
+
+  function esUrlValida(valor) {
+    try {
+      new URL(valor)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  function validar() {
+    const nuevosErrores = {}
+    if (producto.nombre.trim().length < 3) {
+      nuevosErrores.nombre = 'El nombre es demasiado corto'
+    }
+    if (producto.precio === '' || Number(producto.precio) <= 0) {
+      nuevosErrores.precio = 'El precio debe ser un monto mayor a 0'
+    }
+    if (producto.categoria.trim() === '') {
+      nuevosErrores.categoria = 'Ingrese una categoría'
+    }
+    if (producto.descripcion.trim().length < 10) {
+      nuevosErrores.descripcion = 'La descripción debe tener al menos 10 caracteres'
+    }
+    if (!esUrlValida(producto.imagen)) {
+      nuevosErrores.imagen = 'Ingrese una URL válida (http:// o https://)'
+    }
+    return nuevosErrores
+  }
+
+  async function actualizarProducto(event) {
+    event.preventDefault()
+    const nuevosErrores = validar()
+    setErrores(nuevosErrores)
+    setMensaje('')
+    setErrorServidor('')
+
+    if (Object.keys(nuevosErrores).length > 0) return
+
+    try {
+      await productService.update(id, { ...producto, precio: Number(producto.precio) })
+      setMensaje('Producto actualizado correctamente')
+      setTimeout(() => navigate('/admin/productos'), 800)
+    } catch (error) {
+      setErrorServidor('No se pudo conectar con el servidor')
+    }
+  }
+
+  return (
+    <>
+      <h1 className="mb-4">Editar Producto</h1>
+      {mensaje && <Alert variant="success">{mensaje}</Alert>}
+      {errorServidor && <Alert variant="danger">{errorServidor}</Alert>}
+      <Form onSubmit={actualizarProducto}>
+        <Form.Group className="mb-3">
+          <Form.Label>Nombre</Form.Label>
+          <Form.Control
+            name="nombre"
+            value={producto.nombre}
+            onChange={manejarCambio}
+            isInvalid={!!errores.nombre}
+          />
+          <Form.Control.Feedback type="invalid">{errores.nombre}</Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Precio ($)</Form.Label>
+          <Form.Control
+            type="number"
+            name="precio"
+            value={producto.precio}
+            onChange={manejarCambio}
+            isInvalid={!!errores.precio}
+          />
+          <Form.Control.Feedback type="invalid">{errores.precio}</Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Categoría</Form.Label>
+          <Form.Control
+            name="categoria"
+            value={producto.categoria}
+            onChange={manejarCambio}
+            isInvalid={!!errores.categoria}
+          />
+          <Form.Control.Feedback type="invalid">{errores.categoria}</Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Descripción</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            name="descripcion"
+            value={producto.descripcion}
+            onChange={manejarCambio}
+            isInvalid={!!errores.descripcion}
+          />
+          <Form.Control.Feedback type="invalid">{errores.descripcion}</Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>URL de la imagen</Form.Label>
+          <Form.Control
+            name="imagen"
+            value={producto.imagen}
+            onChange={manejarCambio}
+            placeholder="https://..."
+            isInvalid={!!errores.imagen}
+          />
+          <Form.Control.Feedback type="invalid">{errores.imagen}</Form.Control.Feedback>
+        </Form.Group>
+
+        {esUrlValida(producto.imagen) && (
+          <div className="mb-3">
+            <Form.Label className="d-block text-muted">Vista previa:</Form.Label>
+            <img
+              src={producto.imagen}
+              alt="Vista previa"
+              style={{ maxHeight: '160px', borderRadius: '8px', objectFit: 'cover' }}
+            />
+          </div>
+        )}
+
+        <Button type="submit" variant="primary" className="me-2">
+          Guardar Cambios
+        </Button>
+        <Button as={Link} to="/admin/productos" variant="secondary">
+          Cancelar
+        </Button>
+      </Form>
+    </>
+  )
+}
+
+export default AdminEditarProductoView
